@@ -2,13 +2,13 @@ const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const { supabase } = require('../config/db');
 
-const client = new OAuth2Client('YOUR_GOOGLE_CLIENT_ID');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const googleLogin = async (req, res) => {
     const { tokenId } = req.body;
     const ticket = await client.verifyIdToken({
         idToken: tokenId,
-        audience: 'YOUR_GOOGLE_CLIENT_ID',
+        audience: process.env.GOOGLE_CLIENT_ID,
     });
     const { name, email, picture } = ticket.getPayload();
 
@@ -24,7 +24,7 @@ const googleLogin = async (req, res) => {
         ]).single());
     }
 
-    const token = jwt.sign({ userId: data.id }, 'YOUR_JWT_SECRET', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: data.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
 };
 
